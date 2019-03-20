@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 
 class Login extends Component {
 	state = {
-		username: '',
 		email: '',
 		password: '',
 		errors: [],
@@ -19,8 +18,8 @@ class Login extends Component {
 	};
 
 	handleSubmit = event => {
-		if (this.isFormValid(this.state)){
-			event.preventDefault();
+		event.preventDefault();
+		if (this.isFormValid(this.state)) {
 			this.setState({errors: [], loading: true})
 			firebase
 				.auth()
@@ -49,14 +48,15 @@ class Login extends Component {
 		return (
 			<Grid textAlign="center" verticalAlign="middle" className="app">
 				<Grid.Column style={{ maxWidth: 450 }}>
-					<Header as="h1" icon color="brown" textAlign="center">
-						 <Icon name="code" color="brown" />
+					<Header as="h1" icon color="teal" textAlign="center">
+						 <Icon name="wechat" color="teal" />
 						 Login to DevChat
 					</Header>
 					<Form onSubmit={this.handleSubmit} size="large">
 						<Segment stacked>
 							<Form.Input 
-								fluid name="email" 
+								fluid 
+								name="email" 
 								icon="mail" 
 								iconPosition="left" 
 								placeholder="Email Address"
@@ -66,7 +66,8 @@ class Login extends Component {
 								onChange={this.handleChange} />
 							
 							<Form.Input 
-								fluid name="password" 
+								fluid 
+								name="password" 
 								icon="lock" 
 								iconPosition="left" 
 								placeholder="Password"
@@ -75,7 +76,15 @@ class Login extends Component {
 								className={this.handleInputError(errors, 'password')}
 								onChange={this.handleChange} />
 							
-							<Button disabled={loading} className={loading ? 'loading' : ''} color="brown" fluid size="large">Submit</Button>
+							<Button 
+								disabled={loading} 
+								className={loading ? 'loading' : ''} 
+								color="teal" 
+								fluid 
+								size="large"
+							>
+								Submit
+							</Button>
 						</Segment>
 					</Form>
 					{errors.length > 0 && (

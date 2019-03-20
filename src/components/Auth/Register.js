@@ -22,7 +22,7 @@ class Register extends Component {
 		if (this.isFormEmpty(this.state)) {
 			error = {message: 'Fill in all fields'}
 			this.setState({errors: errors.concat(error)});
-			return false
+			return false;
 		} else if (!this.isPasswordValid(this.state)) {
 			error = {message: 'Password is invalid'};
 			this.setState({errors: errors.concat(error)});
@@ -66,7 +66,6 @@ class Register extends Component {
 						photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
 					})
 					.then(() => {
-						this.setState({loading: false})
 						this.saveUser(createdUser).then(() => {
 							console.log('user saved');
 						})
@@ -99,8 +98,8 @@ class Register extends Component {
 		return (
 			<Grid textAlign="center" verticalAlign="middle" className="app">
 				<Grid.Column style={{ maxWidth: 450 }}>
-					<Header as="h1" icon color="teal" textAlign="center">
-						 <Icon name="puzzle piece" color="teal" />
+					<Header as="h1" icon color="orange" textAlign="center">
+						 <Icon name="wechat" color="orange" />
 						 Register for DevChat
 					</Header>
 					<Form onSubmit={this.handleSubmit} size="large">
@@ -144,7 +143,7 @@ class Register extends Component {
 								className={this.handleInputError(errors, 'password')}
 								onChange={this.handleChange} />
 							
-							<Button disabled={loading} className={loading ? 'loading' : ''} color="teal" fluid size="large">Submit</Button>
+							<Button disabled={loading} className={loading ? 'loading' : ''} color="orange" fluid size="large">Submit</Button>
 						</Segment>
 					</Form>
 					{errors.length > 0 && (
