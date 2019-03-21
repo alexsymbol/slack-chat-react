@@ -10,7 +10,6 @@ import MetaPanel from './MetaPanel/Metapanel';
 
 const App = ({currentUser}) => (
 	<Grid columns="equal" className="app" style={{background: '#eee'}}>
-	{console.log(currentUser)}
 		<ColorPanel />
     	<SidePanel currentUser={currentUser} />
 
