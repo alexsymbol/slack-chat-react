@@ -7,6 +7,8 @@ class UserPanel extends Component {
 		user: this.props.currentUser
 	};
 
+	co
+
 	dropDownOptions = () => [
 		{
 			key: 'user',
