@@ -18,6 +18,14 @@ class Starred extends Component {
 		}
 	};
 
+	componentWillUnmount() {
+		this.removeListener();
+	};
+
+	removeListener = () => {
+		this.state.usersRef.child(`${this.state.user.uid}/starred`).off();
+	};
+
 	addlisteners = userId => {
 		this.state.usersRef
 			.child(userId)
@@ -38,7 +46,7 @@ class Starred extends Component {
 					return channel.id !== channelToRemove.id;
 				});
 				this.setState({starredChannels: filteredChanels});
-			})
+			});
 	};
 
 	setActiveChannel = channel => {
@@ -51,7 +59,7 @@ class Starred extends Component {
 		this.props.setPrivateChannel(false);
 	};
 
-	displayChannels = starredChannels => (
+	displayChannels = starredChannels =>
 		starredChannels.length > 0 && starredChannels.map(channel => (
 			<Menu.Item
 				key={channel.id}
@@ -62,8 +70,7 @@ class Starred extends Component {
 			>
 				# {channel.name}
 			</Menu.Item>
-		))
-	);
+		));
 
 	render() {
 		const { starredChannels } = this.state;

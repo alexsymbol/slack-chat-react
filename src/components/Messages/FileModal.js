@@ -18,6 +18,7 @@ class FileModal extends Component {
 	sendFile = () => {
 		const { file } = this.state;
 		const { uploadFile, closeModal } = this.props;
+
 		if (file !== null) {
 			if (this.isAuthtorized(file.name)) {
 				const metadata = { contentType: mime.lookup(file.name)};
@@ -34,6 +35,7 @@ class FileModal extends Component {
 
 	render() {
 		const { modal, closeModal } = this.props;
+		
 		return (
 			<Modal basic open={modal} onClose={closeModal} >
 				<Modal.Header>Select an Image File</Modal.Header>

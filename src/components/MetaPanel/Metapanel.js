@@ -6,7 +6,7 @@ class MetaPanel extends Component {
 		channel: this.props.currentChannel,
 		privateChannel: this.props.isPrivateChannel,
 		activeIndex: 0
-	}
+	};
 
 	setActiveIndex = (event, titleProps) => {
 		const { index } = titleProps;
@@ -29,7 +29,7 @@ class MetaPanel extends Component {
 					</List.Content>
 				</List.Item>
 			))
-			.slice(0, 5);
+			.slice(0, 2);
 
 	render() {
 		const { activeIndex, privateChannel, channel } = this.state;
@@ -66,9 +66,7 @@ class MetaPanel extends Component {
 						Top Posters
 					</Accordion.Title>
 					<Accordion.Content active={activeIndex === 1}>
-						<List>
-							{userPosts && this.displayTopPosters(userPosts)}
-						</List>
+						<List>{userPosts && this.displayTopPosters(userPosts)}</List>
 					</Accordion.Content>
 
 					<Accordion.Title

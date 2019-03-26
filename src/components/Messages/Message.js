@@ -6,7 +6,7 @@ const isOwnMessage = (message, user) => {
 	return message.user.id === user.uid ? 'message__self' : '';
 };
 
-const isImage = (message) => {
+const isImage = message => {
 	return message.hasOwnProperty('image') && !message.hasOwnProperty('content');
 };
 

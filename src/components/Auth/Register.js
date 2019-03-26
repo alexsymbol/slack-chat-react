@@ -12,7 +12,7 @@ class Register extends Component {
 		passwordConfirmation: '',
 		errors: [],
 		loading: false,
-		userRef: firebase.database().ref('users')
+		usersRef: firebase.database().ref('users')
 	};
 
 	isFormValid = () => {
@@ -20,7 +20,7 @@ class Register extends Component {
 		let error;
 
 		if (this.isFormEmpty(this.state)) {
-			error = {message: 'Fill in all fields'}
+			error = {message: 'Fill in all fields'};
 			this.setState({errors: errors.concat(error)});
 			return false;
 		} else if (!this.isPasswordValid(this.state)) {
@@ -33,7 +33,7 @@ class Register extends Component {
 	};
 
 	isFormEmpty = ({username, email, password, passwordConfirmation}) => {
-		return !username.length || !email.length || !password.length || !passwordConfirmation.length;
+		return (!username.length || !email.length || !password.length || !passwordConfirmation.length);
 	};
 
 	isPasswordValid = ({password, passwordConfirmation}) => {
@@ -46,55 +46,63 @@ class Register extends Component {
 		}
 	};
 
-	displayErrors = errors => errors.map((error, i) => <p key={i}>{error.message}</p>)
+	displayErrors = errors => errors.map((error, i) => <p key={i}>{error.message}</p>);
 
 	handleChange = event => {
 		this.setState({[event.target.name]: event.target.value});
 	};
 
 	handleSubmit = event => {
-		if (this.isFormValid()){
-			event.preventDefault();
+		event.preventDefault();
+		if (this.isFormValid()) {
 			this.setState({errors: [], loading: true})
 			firebase
 				.auth()
 				.createUserWithEmailAndPassword(this.state.email, this.state.password)
 				.then(createdUser => {
 					console.log(createdUser);
-					createdUser.user.updateProfile({
+					createdUser.user
+					.updateProfile({
 						displayName: this.state.username,
 						photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
 					})
 					.then(() => {
 						this.saveUser(createdUser).then(() => {
 							console.log('user saved');
-						})
+						});
 					})
 					.catch(err => {
 						console.log(err);
-						this.setState({errors: this.state.error.concat(err), loading: false})
-					})
+						this.setState({
+							errors: this.state.error.concat(err), 
+							loading: false
+						});
+					});
 				})
 				.catch(err => {
 					console.log(err);
-					this.setState({errors: this.state.errors.concat(err), loading: false});
-				})
+					this.setState({
+						errors: this.state.errors.concat(err), 
+						loading: false
+					});
+				});
 		}	
 	};
 
 	saveUser = createdUser => {
-		return this.state.userRef.child(createdUser.user.uid).set({
+		return this.state.usersRef.child(createdUser.user.uid).set({
 			name: createdUser.user.displayName,
 			avatar: createdUser.user.photoURL
 		});
 	};
 
 	handleInputError = (errors, inputName) => {
-		return errors.some(error=> error.message.toLowerCase().includes(inputName)) ? 'error' : '';
+		return errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error' : '';
 	};
 
 	render() {
 		const { username, email, password, passwordConfirmation, errors, loading } = this.state;
+
 		return (
 			<Grid textAlign="center" verticalAlign="middle" className="app">
 				<Grid.Column style={{ maxWidth: 450 }}>
@@ -143,7 +151,15 @@ class Register extends Component {
 								className={this.handleInputError(errors, 'password')}
 								onChange={this.handleChange} />
 							
-							<Button disabled={loading} className={loading ? 'loading' : ''} color="orange" fluid size="large">Submit</Button>
+							<Button 
+								disabled={loading} 
+								className={loading ? 'loading' : ''} 
+								color="orange" 
+								fluid 
+								size="large"
+							>
+								Submit
+							</Button>
 						</Segment>
 					</Form>
 					{errors.length > 0 && (
@@ -152,7 +168,9 @@ class Register extends Component {
 							{this.displayErrors(errors)}
 						</Message>
 					)}
-					<Message>Already a user? <Link to="/login">Login</Link></Message>
+					<Message>
+						Already a user? <Link to="/login">Login</Link>
+					</Message>
 				</Grid.Column>
 			</Grid>
 		);

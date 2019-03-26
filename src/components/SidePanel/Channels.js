@@ -33,11 +33,11 @@ class Channels extends Component {
 		this.state.channelsRef.on('child_added', snap => {
 			loadedChannels.push(snap.val());
 			this.setState({channels: loadedChannels}, () => this.setFirstChannel());
-			this.addNotificationListeners(snap.key);
+			this.addNotificationListener(snap.key);
 		});
 	};
 
-	addNotificationListeners = channelId => {
+	addNotificationListener = channelId => {
 		this.state.messagesRef.child(channelId).on('value', snap => {
 			if (this.state.channel) {
 				this.handleNotifications(channelId, this.state.channel.id, this.state.notifications, snap);
@@ -65,7 +65,7 @@ class Channels extends Component {
 				total: snap.numChildren(),
 				lastKnownTotal: snap.numChildren(),
 				count: 0
-			})
+			});
 		}
 
 		this.setState({notifications});
@@ -73,6 +73,9 @@ class Channels extends Component {
 
 	removeListeners = () => {
 		this.state.channelsRef.off();
+		this.state.channels.forEach(channel => {
+			this.state.messagesRef.child(channel.id).off();
+		});
 	};
 
 	setFirstChannel = () => {
@@ -163,7 +166,7 @@ class Channels extends Component {
 		if (count > 0) return count;
 	};
 
-	displayChannels = channels => (
+	displayChannels = channels => 
 		channels.length > 0 && channels.map(channel => (
 			<Menu.Item
 				key={channel.id}
@@ -177,8 +180,7 @@ class Channels extends Component {
 				)}
 				# {channel.name}
 			</Menu.Item>
-		))
-	);
+		));
 
 	isFormValid = ({channelName, channelDetails}) => channelName && channelDetails;
 
@@ -188,6 +190,7 @@ class Channels extends Component {
 
 	render() {
 		const { channels, modal } = this.state;
+		
 		return (
 			<React.Fragment>
 				<Menu.Menu className="menu">

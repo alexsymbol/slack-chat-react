@@ -13,12 +13,22 @@ class DirectMessages extends Component {
 		usersRef: firebase.database().ref('users'),
 		connectedRef: firebase.database().ref('.info/connected'),
 		precenceRef: firebase.database().ref('presence')
-	}
+	};
 
 	componentDidMount() {
 		if (this.state.user) {
 			this.addListeners(this.state.user.uid);
 		}
+	};
+
+	componentWillUnmount() {
+		this.removeLlisteners();
+	};
+
+	removeLlisteners = () => {
+		this.state.usersRef.off();
+		this.state.precenceRef.off();
+		this.state.connectedRef.off();
 	};
 
 	addListeners = currentUserUid => {
@@ -41,7 +51,7 @@ class DirectMessages extends Component {
 					if (err !== null) {
 						console.log(err);
 					}
-				})
+				});
 			}
 		});
 

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Sidebar, Menu, Divider, Button, Modal, Icon, Label, Segment } from 'semantic-ui-react';
-import { SliderPicker } from 'react-color';
 import firebase from '../../firebase';
 import { connect } from 'react-redux';
 import { setColors } from '../../actions';
+import { Sidebar, Menu, Divider, Button, Modal, Icon, Label, Segment } from 'semantic-ui-react';
+import { SliderPicker } from 'react-color';
 
 class ColorPanel extends Component {
 	state = {
@@ -21,14 +21,20 @@ class ColorPanel extends Component {
 		}
 	};
 
+	componentWillUnmount() {
+		this.removeListener();
+	};
+
+	removeListener = () => {
+		this.state.usersRef.child(`${this.state.user.uid}/colors`).off();
+	};
+
 	addListener = userId => {
 		let userColors = [];
-		this.state.usersRef
-			.child(`${userId}/colors`)
-			.on('child_added', snap => {
-				userColors.unshift(snap.val());
-				this.setState({userColors});
-			})
+		this.state.usersRef.child(`${userId}/colors`).on('child_added', snap => {
+			userColors.unshift(snap.val());
+			this.setState({userColors});
+		});
 	};
 
 	handleChangePrimary = color => this.setState({primary: color.hex});
@@ -69,7 +75,7 @@ class ColorPanel extends Component {
 					</div>
 				</div>
 			</React.Fragment>
-		))
+		));
 
 	openModal = () => this.setState({modal: true});
 

@@ -8,7 +8,6 @@ import 'emoji-mart/css/emoji-mart.css';
 import FileModal from './FileModal';
 import ProgressBar from './ProgressBar';
 
-
 class MessageForm extends Component {
 	state = {
 		storageRef: firebase.storage().ref(),
@@ -25,6 +24,13 @@ class MessageForm extends Component {
 		emojiPicker: false
 	};
 
+	componentWillUnmount() {
+		if (this.state.uploadTask !== null) {
+			this.state.uploadTask.cancel();
+			this.setState({uploadTask: null});
+		}
+	};
+
 	openModal = () => this.setState({modal: true});
 	
 	closeModal = () => this.setState({modal: false});
@@ -33,7 +39,11 @@ class MessageForm extends Component {
 		this.setState({[event.target.name]: event.target.value});
 	};
 	
-	handleKeyDown = () => {
+	handleKeyDown = event => {
+		if (event.ctrlKey && event.keyCode === 13) {
+			this.sendMessage();
+		}
+
 		const { message, typingRef, channel, user } = this.state;
 
 		if (message) {
@@ -90,7 +100,6 @@ class MessageForm extends Component {
 		} else {
 			message['content'] = this.state.message;
 		}
-		
 		return message;
 	};
 
@@ -116,8 +125,8 @@ class MessageForm extends Component {
 					this.setState({
 						loading: false,
 						errors: this.state.errors.concat(err)
-					})
-				})
+					});
+				});
 		} else {
 			this.setState({
 				errors: this.state.errors.concat({message: 'Add a message'})
@@ -127,7 +136,7 @@ class MessageForm extends Component {
 
 	getPath = () => {
 		if (this.props.isPrivateChannel) {
-			return `chat/private-${this.state.channel.id}`;
+			return `chat/private/${this.state.channel.id}`;
 		} else {
 			return 'chat/public';
 		}
@@ -140,43 +149,42 @@ class MessageForm extends Component {
 
 		this.setState(
 			{
-			uploadState: 'uploading',
-			uploadTask: this.state.storageRef.child(filePath).put(file, metadata)
+				uploadState: 'uploading',
+				uploadTask: this.state.storageRef.child(filePath).put(file, metadata)
 			},
 			() => {
-			this.state.uploadTask.on(
-				'state_changed',
-				snap => {
-				const percentUploaded = Math.round(
-					(snap.bytesTransferred / snap.totalBytes) * 100
-				);
-				this.props.isProgressBarVisible(percentUploaded);
-				this.setState({ percentUploaded });
-				},
-				err => {
-					console.error(err);
-					this.setState({
-						errors: this.state.errors.concat(err),
-						uploadState: 'error',
-						uploadTask: null
-					});
-				},
-				() => {
-				this.state.uploadTask.snapshot.ref
-					.getDownloadURL()
-					.then(downloadUrl => {
-					this.sendFileMessage(downloadUrl, ref, pathToUpload);
-					})
-					.catch(err => {
+				this.state.uploadTask.on(
+					'state_changed',
+					snap => {
+					const percentUploaded = Math.round(
+						(snap.bytesTransferred / snap.totalBytes) * 100
+					);
+					this.setState({ percentUploaded });
+					},
+					err => {
 						console.error(err);
 						this.setState({
 							errors: this.state.errors.concat(err),
 							uploadState: 'error',
 							uploadTask: null
 						});
-					});
-				}
-			);
+					},
+					() => {
+					this.state.uploadTask.snapshot.ref
+						.getDownloadURL()
+						.then(downloadUrl => {
+						this.sendFileMessage(downloadUrl, ref, pathToUpload);
+						})
+						.catch(err => {
+							console.error(err);
+							this.setState({
+								errors: this.state.errors.concat(err),
+								uploadState: 'error',
+								uploadTask: null
+							});
+						});
+					}
+				);
 			}
 		);
 	};
@@ -193,9 +201,9 @@ class MessageForm extends Component {
 				console.error(err);
 				this.setState({
 					errors: this.state.errors.concat(err)
-				})
-			})
-	}
+				});
+			});
+	};
 
 	render() {
 		const { errors, message, loading, modal, uploadState, percentUploaded, emojiPicker } = this.state;

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import firebase from '../../firebase';
 import AvatarEditor from 'react-avatar-editor';
 import { Grid, Header, Icon, Dropdown, Image, Modal, Input, Button } from 'semantic-ui-react';
-import { timingSafeEqual } from 'crypto';
 
 class UserPanel extends Component {
 	state = {
@@ -10,8 +9,8 @@ class UserPanel extends Component {
 		modal: false,
 		previewImage: '',
 		croppedImage: '',
-		blob: '',
-		uploadCroppedImage: '',
+		blob: null,
+		uploadedCroppedImage: '',
 		storageRef: firebase.storage().ref(),
 		userRef: firebase.auth().currentUser,
 		usersRef: firebase.database().ref('users'),
@@ -46,21 +45,20 @@ class UserPanel extends Component {
 		const { storageRef, userRef, blob, metadata } = this.state;
 
 		storageRef
-			.child(`avatars/user-${userRef.uid}`)
+			.child(`avatars/users/${userRef.uid}`)
 			.put(blob, metadata)
 			.then(snap => {
 				snap.ref.getDownloadURL().then(downloadURL => {
-					this.setState({uploadCroppedImage: downloadURL}, () =>
-					this.changeAvatar())
-				})
-			})
-
+					this.setState({uploadedCroppedImage: downloadURL}, () =>
+					this.changeAvatar());
+				});
+			});
 	};
 
 	changeAvatar = () => {
 		this.state.userRef
 			.updateProfile({
-				photoURL: this.state.uploadCroppedImage
+				photoURL: this.state.uploadedCroppedImage
 			})
 			.then(() => {
 				console.log('PhotoURL updated');
@@ -70,9 +68,9 @@ class UserPanel extends Component {
 				console.error(err);
 			});
 		
-		this.state.userRef
+		this.state.usersRef
 			.child(this.state.user.uid)
-			.update({avatar: this.state.uploadCroppedImage})
+			.update({avatar: this.state.uploadedCroppedImage})
 			.then(() => {
 				console.log('User avatar updated');
 			})
@@ -102,7 +100,7 @@ class UserPanel extends Component {
 					blob
 				});
 			});
-		};
+		}
 	};
 
 	handleSignout = () => {
@@ -115,6 +113,7 @@ class UserPanel extends Component {
 	render() {
 		const { user, modal, previewImage, croppedImage } = this.state;
 		const { primaryColor } = this.props;
+
 		return (
 			<Grid style={{background: primaryColor}}>
 				<Grid.Column>
@@ -122,7 +121,7 @@ class UserPanel extends Component {
 						{/* App Header*/}
 						<Header inverted floated="left" as="h2">
 						<Icon name="code"/>
-							<Header.Content>DevChat</Header.Content>
+							<Header.Content>ReactChat</Header.Content>
 						</Header>
 
 						{/* User Dropdown*/}
@@ -177,9 +176,11 @@ class UserPanel extends Component {
 							</Grid>
 						</Modal.Content>
 						<Modal.Actions>
-							{croppedImage && <Button color="green" inverted onClick={this.uploadCroppedImage}>
-								<Icon name="save" /> Change Avatar
-							</Button>}
+							{croppedImage && ( 
+								<Button color="green" inverted onClick={this.uploadCroppedImage}>
+									<Icon name="save" /> Change Avatar
+								</Button>
+							)}
 							<Button color="green" inverted onClick={this.handleCropImage}>
 								<Icon name="image" /> Preview
 							</Button>

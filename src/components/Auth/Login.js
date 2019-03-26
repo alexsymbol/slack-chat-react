@@ -11,7 +11,7 @@ class Login extends Component {
 		loading: false
 	};
 
-	displayErrors = errors => errors.map((error, i) => <p key={i}>{error.message}</p>)
+	displayErrors = errors => errors.map((error, i) => <p key={i}>{error.message}</p>);
 
 	handleChange = event => {
 		this.setState({[event.target.name]: event.target.value});
@@ -20,7 +20,7 @@ class Login extends Component {
 	handleSubmit = event => {
 		event.preventDefault();
 		if (this.isFormValid(this.state)) {
-			this.setState({errors: [], loading: true})
+			this.setState({errors: [], loading: true});
 			firebase
 				.auth()
 				.signInWithEmailAndPassword(this.state.email, this.state.password)
@@ -40,11 +40,12 @@ class Login extends Component {
 	isFormValid = ({email, password}) => email && password;
 
 	handleInputError = (errors, inputName) => {
-		return errors.some(error=> error.message.toLowerCase().includes(inputName)) ? 'error' : '';
+		return errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error' : '';
 	};
 
 	render() {
 		const { email, password, errors, loading } = this.state;
+
 		return (
 			<Grid textAlign="center" verticalAlign="middle" className="app">
 				<Grid.Column style={{ maxWidth: 450 }}>
